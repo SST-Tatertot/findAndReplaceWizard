@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EN Magic Replacement</title>
+<link rel="icon" type="image/x-icon" href="https://img.icons8.com/?size=100&id=er279jFX2Yuq&format=png&color=7950F2">
+<style>
+/* Discord-inspired dark theme */
+body {
+    font-family: Arial, sans-serif;
+    /*background-color: #2c2f33; /* Dark gray background */
+    color: #ffffff; /* White text */
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(to bottom, #2c2f33 10%, #202323);
+}
+.main {
+    width: 50%;
+    margin: 0 auto;
+    background-color: #202323;
+    padding-top: 50px;
+    min-height: 100vh;
+}
+h1 {
+    color: #7289da; /* Discord blue */
+    text-align: center;
+    font-size: 40px;
+}
+p {
+    color: #99aab5; /* Light gray text */
+}
+.front {
+    transition: transform 600ms cubic-bezier(.3, .7, .4, 1);
+}
+.front:hover {
+    transform: translateY(-8px);
+    transition: transform 250ms cubic-bezier(.3, .7, .4, 1.5);
+}
+button {
+    background-color: #432F90;
+    Discord blue color: #ffffff;
+    border: none;
+    background: #432F90;
+    border-radius: 12px;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    outline-offset: 4px;
+}
+.front {
+    display: block;
+    padding: 12px 42px 12px 42px;
+    border-radius: 12px;
+    font-size: 1.25rem;
+    background: #7774B6;
+    color: white;
+    transform: translateY(-6px);
+}
+button#processFiles{
+    margin-top: 50px;
+}
+#processFiles .front {
+    padding: 12px 60px;
+}
+.front:active {
+    transform: translateY(-2px);
+    transition: transform 34ms;
+    background: #3f5173;
+}
+#downloadLinks a {
+    float: left;
+    display: inline block;
+    margin: 20px 20px 0 20px;
+    color: #fff;
+    text-decoration: none;
+    border: none;
+    background: #432F90;
+    border-radius: 12px;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    width: 40%;
+    text-align: center;
+}
+#downloadLinks a:active {
+    transform: translateY(-2px);
+    transition: transform 34ms;
+}
+#downloadLinks a:hover {
+    color: #fff;
+    transform: translateY(-4px);
+    transition: transform 250ms cubic-bezier(.3, .7, .4, 1.5);
+}
+#downloadLinks {
+    margin-top: 20px;
+    border-top: 1px solid #99aab5; /* Light gray border */
+    padding-top: 20px;
+    text-align: center;
+}
+@keyframes bob {
+    0% {
+        transform: translateY(0);
+    }
+    100% {
+        transform: translateY(-10px) scaleY(1.01);
+        filter: brightness(100%);
+    }
+}
+.bobbing-image {
+    animation: bob 2s infinite alternate;
+    filter: brightness(85%);
+}
+.content {
+    text-align: center;
+}
+.cover {
+    color: #fff;
+    font-weight: bold;
+    border-radius: 5px;
+    padding: 5px;
+    margin: 0 0 20px 200px;
+    background-color: #2C2F33;
+    border: none;
+    border-radius: calc(0.5*20px);
+    font-size: inherit;
+    outline: 0;
+    position: relative;
+    width: 200px;
+    text-align: center;
+    cursor: pointer;
+    padding: 15px 100px 15px 100px;
+}
+input[type="file"] {
+    display: none;
+}
+.cover {
+    transition: transform 0.2s ease-in-out;
+}
+.cover:active {
+    transform: scale(1.05);
+    border: #20px #FFFFFF;
+}
+.cover:hover {
+    box-shadow: 0px 0px 10px #fff;
+}
+#lang {
+    margin-left: 32%;
+}
+#lang .front {
+    background: #2C2F33;
+    padding: 5px 20px;
+    font-size: large;
+    border-radius: 5px;
+    vertical-align: middle;
+}
+button#lang {
+    background: #3F4349;
+    border-radius: 5px;
+    display: inline;
+    vertical-align: middle;
+}
+nav {
+    display: inline-block;
+    height: 60px;
+    background-color: #202323;
+    width: 100%;
+    float: left;
+    position: relative;
+}
+nav img {
+    max-height: 100%;
+    padding: 0px 20px 0px 100px;
+    display: inline block;
+}
+nav li {
+    display: inline;
+    vertical-align: middle;
+    font-size: large;
+    color: #867CB9;
+}
+.selected{
+    display: none;
+    position: absolute;
+    left: 40px;
+    top: 100px;
+    width: 200px;
+}
+.selected li{
+    list-style-type: none;
+    margin: 20px 20px 0 20px;
+    color: #fff;
+    border:thin #432F90;
+    background: #202323;
+    border-radius: 12px;
+    padding: 10px;
+    width: 100%;
+    text-align: center;
+}
+</style>
+</head>
+<body>
+<nav>
+    <li><img src="https://img.icons8.com/?size=100&id=er279jFX2Yuq&format=png&color=7950F2" alt="flame"></li>
+    <li>Find and replace Wizard (English)</li>
+    <li>
+        <label class="cover"> Search spellbook
+            <input type="file" id="fileInput" accept=".html" multiple />
+        </label>
+    </li>
+    <button id="lang" onclick="location.href='file:///C:/Working%20files/findAndReplaceFR.html'"> <span class="front"> French </span> </button>
+</nav>
+<div class="main">
+    <div class="content"> 
+        <br>
+        <button id="processFiles"> <span class="front"> Cast spell </span> </button>
+        <div id="downloadLinks"></div>
+        <br>
+        <ul class="selected">
+            
+        </ul>
+        <img src="https://images.vexels.com/content/241441/preview/floating-wizard-illustration-8d5b41.png" alt="wizard" class="bobbing-image">
+    </div>
+</div>
+<script>
+    document.getElementById('fileInput').addEventListener('change', handleFileSelection);
+    
+    function handleFileSelection() {
+        const fileInput = document.getElementById('fileInput');
+        const selectedList = document.querySelector('.selected');
+
+        // Clear the list of selected files
+        selectedList.innerHTML = '';
+
+        // Show the list (in case it's hidden)
+        selectedList.style.display = 'block';
+
+        const files = Array.from(fileInput.files);
+
+        // Add each selected file to the list
+        files.forEach((file) => {
+            const listItem = document.createElement('li');
+            listItem.textContent = file.name;
+            selectedList.appendChild(listItem);
+        });
+    }
+
+    function hideFileList() {
+        const selectedList = document.querySelector('.selected');
+        selectedList.style.display = 'none';
+    }
+    
+    document.getElementById('processFiles').addEventListener('click', () => {
+        hideFileList(); // Hide the list
+        const fileInput = document.getElementById('fileInput');
+        const downloadLinks = document.getElementById('downloadLinks');
+
+        if (!fileInput.files.length) {
+            alert('Please select one or more HTML files first!');
+            return;
+        }
+
+        // Clear previous download links
+        downloadLinks.innerHTML = '';
+
+        const files = Array.from(fileInput.files);
+
+        // Define find-and-replace operations
+        const replacements = [
+            { find: ' v ', replace: ' <abbr title="versus">v</abbr> ' },
+            { find: ' </em>v<em> ', replace: ' </em><abbr title="versus">v</abbr><em> ' },
+            { find: '</em> v <em>', replace: '</em> <abbr title="versus">v</abbr> <em>' },
+            { find: ' v&nbsp;', replace: ' <abbr title="versus">v</abbr> ' },
+            { find: '&nbsp;v ', replace: ' <abbr title="versus">v</abbr> ' },
+            { find: '&nbsp;v&nbsp;', replace: ' <abbr title="versus">v</abbr> ' },
+            { find: ' v. ', replace: ' <abbr title="versus">v.</abbr> ' },
+            { find: ' </em>v.<em> ', replace: ' </em><abbr title="versus">v.</abbr><em> ' },
+            { find: '</em> v. <em>', replace: '</em> <abbr title="versus">v.</abbr> <em>' },
+            { find: ' v.&nbsp;', replace: ' <abbr title="versus">v.</abbr> ' },
+            { find: '&nbsp;v. ', replace: ' <abbr title="versus">v.</abbr> ' },
+            { find: '&nbsp;v.&nbsp;', replace: ' <abbr title="versus">v.</abbr> ' },
+            { find: 'ADR', replace: '<abbr title="Alternative Dispute Resolution">ADR</abbr>' },
+            { find: 'CERA', replace: '<abbr title="COVID-19 Emergency Response Act">CERA</abbr>' },
+            { find: 'CERB', replace: '<abbr title="Canada Emergency Response Benefits">CERB</abbr>' },
+            { find: 'CEIC', replace: '<abbr title="Canada Employment Insurance Commission">CEIC</abbr>' },
+            { find: 'COVID-19', replace: '<abbr title="Coronvirus Disease 2019">COVID-19</abbr>' },
+            { find: 'COVID', replace: '<abbr title="Coronvirus Disease">COVID</abbr>' },
+            { find: 'CPP', replace: '<abbr title="Canada Pension Plan">CPP</abbr>' },
+            { find: 'CRA', replace: '<abbr title="Canada Revenue Agency">CRA</abbr>' },
+            { find: 'CRB', replace: '<abbr title="Canada Recovery Benefit">CRB</abbr>' },
+            { find: 'CRP', replace: '<abbr title="Child Rearing provision">CRP</abbr>' },
+            { find: 'DESD', replace: '<abbr title="Department of Employment and Social Development">DESD</abbr>' },
+            { find: 'DESDA', replace: '<abbr title="Department of Employment and Social Development Act">DESDA</abbr>' },
+            { find: 'DUPE', replace: '<abbr title="Division of Unadjusted Pensionable Earnings">DUPE</abbr>' },
+            { find: 'EI', replace: '<abbr title="Employment Insurance">EI</abbr>' },
+            { find: 'EI ERB', replace: '<abbr title="Employment Insurance Emergency Response Benefit">EI ERB</abbr>' },
+            { find: 'ERB', replace: '<abbr title="Emergency Response Benefit">ERB</abbr>' },
+            { find: 'ESD', replace: '<abbr title="Employment and Social Development">ESD</abbr>' },
+            { find: 'ESDC', replace: '<abbr title="Employment and Social Development Canada">ESDC</abbr>' },
+            { find: 'FC', replace: '<abbr title="Federal Court">FC</abbr>' },
+            { find: ' <abbr title="Federal Court">FC</abbr> ', replace: '&nbsp;<abbr title="Federal Court">FC</abbr>&nbsp;' },
+            { find: ' <abbr title="Federal Court">FC</abbr>&nbsp;', replace: '&nbsp;<abbr title="Federal Court">FC</abbr>&nbsp;' },
+            { find: '&nbsp;<abbr title="Federal Court">FC</abbr> ', replace: '&nbsp;<abbr title="Federal Court">FC</abbr>&nbsp;' },
+            { find: 'FCA', replace: '<abbr title="Federal Court of Appeal">FCA</abbr>' },
+            { find: ' <abbr title="Federal Court of Appeal">FCA</abbr> ', replace: '&nbsp;<abbr title="Federal Court of Appeal">FCA</abbr>&nbsp;' },
+            { find: ' <abbr title="Federal Court of Appeal">FCA</abbr>&nbsp;', replace: '&nbsp;<abbr title="Federal Court of Appeal">FCA</abbr>&nbsp;' },
+            { find: '&nbsp;<abbr title="Federal Court of Appeal">FCA</abbr> ', replace: '&nbsp;<abbr title="Federal Court of Appeal">FCA</abbr>&nbsp;' },
+            { find: 'GIS', replace: '<abbr title="Guaranteed Income Supplement">GIS</abbr>' },
+            { find: 'HRSD', replace: '<abbr title="Human Resources and Skills Development">HRSD</abbr>' },
+            { find: 'IS', replace: '<abbr title="Income Security">IS</abbr>' },
+            { find: 'JGLPA', replace: '<abbr title="Jobs, Growth and Long-term Prosperity Act">JGLPA</abbr>' },
+            { find: 'MIE', replace: '<abbr title="Maximum Insurable Earnings">MIE</abbr>' },
+            { find: 'MQP', replace: '<abbr title="Minimum Qualifying Period">MQP</abbr>' },
+            { find: 'N/A', replace: '<abbr title="Not applicable">N/A</abbr>' },
+            { find: 'OAS', replace: '<abbr title="Old Age Security">OAS</abbr>' },
+            { find: 'OCRT', replace: '<abbr title="Office of the Commissioner of Review Tribunals">OCRT</abbr>' },
+            { find: 'ODSP', replace: '<abbr title="Ontario Disability Support Program">ODSP</abbr>' },
+            { find: 'OSFI', replace: '<abbr title="Office of the Superintendent of Financial Institutions">OSFI</abbr>' },
+            { find: 'PAB', replace: '<abbr title="Pension Appeal Board">PAB</abbr>' },
+            { find: 'PDF', replace: '<abbr title="Portable Document Format">PDF</abbr>' },
+            { find: 'RCMP', replace: '<abbr title="Royal Canadian Mounted Police">RCMP</abbr>' },
+            { find: 'ROE', replace: '<abbr title="Record of employment">ROE</abbr>' },
+            { find: 'SCC', replace: '<abbr title="Supreme Court of Canada">SCC</abbr>' },
+            { find: 'SIN', replace: '<abbr title="Social Insurance Number">SIN</abbr>' },
+            { find: 'TTY', replace: '<abbr title="Teletypewriter">TTY</abbr>' },
+            { find: 'YTD', replace: '<abbr title="Year to date">YTD</abbr>' },
+            { find: 'SST', replace: '<abbr title="Social Security Tribunal">SST</abbr>' },
+            { find: ' <abbr title="Social Security Tribunal">SST</abbr> ', replace: '&nbsp;<abbr title="Social Security Tribunal">SST</abbr>&nbsp;' },
+            { find: 'SSTGD', replace: '<abbr title="Social Security Tribunal General Division">SSTGD</abbr>' },
+            { find: 'SSTAD', replace: '<abbr title="Social Security Tribunal Appeal Division">SSTAD</abbr>' },
+            { find: 'SSTADIS', replace: '<abbr title="Social Security Tribunal Appeal Division Income Security">SSTADIS</abbr>' },
+            { find: 'SSTGDIS', replace: '<abbr title="Social Security Tribunal General Division Income Security">SSTGDIS</abbr>' },
+            { find: 'SSTGDEI', replace: '<abbr title="Social Security Tribunal General Division Employment Insurance">SSTGDEI</abbr>' },
+            { find: 'SSTADEI', replace: '<abbr title="Social Security Tribunal Appeal Division Employment Insurance">SSTADEI</abbr>' },
+        ];
+        // Regex for dates to replace spaces with &nbsp;
+        const dateRegex = /\b([A-Za-z]+) (\d{1,2}), (\d{4})\b/g;
+
+        // Process each file
+        files.forEach((file) => {
+            const reader = new FileReader();
+
+            reader.onload = function (event) {
+                let content = event.target.result;
+
+                // Remove all double spaces
+                content = content.replace(/ {2,}/g, ' ');
+
+                // Perform the replacements
+                replacements.forEach(({ find, replace }) => {
+                    const regex = new RegExp(`\\b${find}\\b`, 'g'); // Match whole word only
+                    content = content.replace(regex, replace);
+                });
+
+                // Replace spaces in dates with &nbsp;
+                content = content.replace(dateRegex, (match, month, day, year) => {
+                    return `${month}&nbsp;${day},&nbsp;${year}`;
+                });
+
+                // Create a downloadable file with the modified content
+                const blob = new Blob([content], { type: 'text/html' });
+                const url = URL.createObjectURL(blob);
+
+                // Create a download link for the modified file
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `${file.name}`; // Prepend "modified_" to the original filename
+                link.textContent = `${file.name}`;
+                link.style.display = 'block';
+                downloadLinks.appendChild(link);
+            };
+            reader.readAsText(file);
+        });
+    });
+</script>
+</body>
+</html>
