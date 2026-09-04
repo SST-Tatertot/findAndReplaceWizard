@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EN Magic Replacement &amp; Formatter</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="https://img.icons8.com/?size=100&id=er279jFX2Yuq&format=png&color=7950F2">
+    <style>
+        :root {
+            --gc-blue: #26374a;
+            --gc-blue-hover: #1c578a;
+            --gc-blue-light: #335075;
+            --gc-red: #af3c43;
+            --gc-red-dark: #923534;
+            --gc-text: #333333;
+            --gc-bg: #f5f5f5;
+            --gc-white: #ffffff;
+            --gc-border: #dcdee1;
+            --gc-muted: #6f6f6f;
+            --radius: 0;
+            --sst-highlight-green: #dae376;
+        }
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Noto Sans', Arial, Helvetica, sans-serif;
+            font-size: 20px;
+            line-height: 1.65;
+            color: var(--gc-text);
+            background-color: var(--gc-bg);
+            margin: 0;
+            padding: 0;
+        }
+        nav {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1.25rem;
+            background-color: var(--gc-blue);
+            color: #ffffff;
+            padding: 0.9rem 1.5rem;
+            min-height: 72px;
+            border-bottom: 6px solid var(--gc-red);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        nav img { height: 40px; width: auto; }
+        nav .title {
+            font-family: 'Lato', 'Noto Sans', sans-serif;
+            font-weight: 700;
+            font-size: 1.4rem;
+            color: #ffffff;
+            letter-spacing: 0.01em;
+        }
+        #lang {
+            background-color: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.75);
+            color: #ffffff;
+            border-radius: 0;
+            padding: 0.5rem 1.15rem;
+            font-family: 'Noto Sans', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.15s ease, border-color 0.15s ease;
+        }
+        #lang:hover,
+        #lang:focus {
+            background-color: rgba(255, 255, 255, 0.15);
+            border-color: #ffffff;
+            outline: 3px solid #ffffff;
+            outline-offset: 2px;
+        }
+        .main {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2.75rem 1.5rem 4.5rem;
+        }
+        .content {
+            text-align: center;
+            background: var(--gc-white);
+            padding: 2.5rem 2rem;
+            border: 1px solid var(--gc-border);
+            box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Drag & Drop Zone */
+        .dropzone {
+            border: 2px dashed var(--gc-muted);
+            border-radius: 0;
+            padding: 2.5rem 1.5rem;
+            background-color: #fafafa;
+            transition: border-color 0.2s ease, background-color 0.2s ease;
+            margin-bottom: 1.75rem;
+            cursor: pointer;
+        }
+        .dropzone.drag-active {
+            border-color: var(--gc-red);
+            background-color: #f9e6e7;
+        }
+        .cover {
+            display: inline-block;
+            background-color: var(--gc-blue);
+            color: #ffffff;
+            border: 1px solid transparent;
+            border-radius: 0;
+            padding: 0.9rem 2.4rem;
+            font-weight: 700;
+            font-size: 1.15rem;
+            cursor: pointer;
+            transition: background-color 0.15s ease;
+            font-family: 'Lato', 'Noto Sans', sans-serif;
+
+        }
+        .cover:hover,
+        .cover:focus {
+            background-color: var(--gc-blue-hover);
+            outline: 3px solid var(--gc-blue);
+            outline-offset: 2px;
+        }
+        input[type="file"] { display: none; }
+        .drag-prompt {
+            font-size: 0.95rem;
+            color: var(--gc-muted);
+            margin-top: 0.85rem;
+            margin-bottom: 0;
+        }
+
+        /* Action Button */
+        button#processFiles {
+            background-color: var(--gc-blue);
+            color: #ffffff;
+            border: 1px solid transparent;
+            border-radius: 0;
+            padding: 1rem 3rem;
+            font-family: 'Lato', 'Noto Sans', sans-serif;
+            font-weight: 700;
+            font-size: 1.25rem;
+            cursor: pointer;
+            transition: background-color 0.15s ease;
+        }
+        button#processFiles:hover,
+        button#processFiles:focus {
+            background-color: var(--gc-blue-hover);
+            outline: 3px solid var(--gc-blue);
+            outline-offset: 2px;
+        }
+
+        /* Selected Files List */
+        .selected {
+            display: none;
+            list-style: none;
+            padding: 0.65rem 0.85rem;
+            margin: 1.5rem auto 1.75rem;
+            max-width: 440px;
+            text-align: left;
+            background: var(--gc-white);
+            border: 1px solid var(--gc-border);
+            border-radius: 0;
+            max-height: 170px;
+            overflow-y: auto;
+        }
+        .selected li {
+            padding: 0.4rem 0.5rem;
+            font-size: 0.95rem;
+            border-bottom: 1px solid #eee;
+            color: var(--gc-text);
+        }
+        .selected li:last-child { border-bottom: none; }
+
+        /* Download Links */
+        #downloadLinks {
+            margin-top: 2.25rem;
+            padding-top: 1.75rem;
+            border-top: 1px solid var(--gc-border);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+        }
+        #downloadLinks a {
+            display: inline-block;
+            background-color: var(--sst-highlight-green);
+            color: #000;
+            text-decoration: none;
+            border: 1px solid transparent;
+            border-radius: 0;
+            padding: 0.8rem 1.6rem;
+            font-size: 1.05rem;
+            font-weight: 600;
+            min-width: 220px;
+            text-align: center;
+            transition: background-color 0.15s ease;
+            font-family: 'Noto Sans', sans-serif;
+        }
+        #downloadLinks a:hover,
+        #downloadLinks a:focus {
+            outline: 3px solid var(--gc-blue);
+            outline-offset: 2px;
+        }
+        .bobbing-image {
+            display: block;
+            margin: 3.25rem auto 0;
+            opacity: 0.9;
+            max-width: 440px;
+            width: 100%;
+            pointer-events: none;
+        }
+        .coatOfArms {
+            opacity: 70%;
+            padding: 50px;
+            height: auto;
+            width: 600px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/c/c7/White_maple_leaf_symbol.png" alt="Maple leaf">
+        <span class="title" id="pageTitle">Find, replace &amp; format (English)</span>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <button id="lang" type="button"><span id="langButtonText">French</span></button>
+    </nav>
+    <div class="main">
+        <div class="content">
+            <!-- Drag and drop zone -->
+            <div class="dropzone" id="dropzone">
+                <label class="cover file-label" id="fileLabel">
+                    Dump
+                    <input type="file" id="fileInput" accept=".html,.htm" multiple />
+                </label>
+                <p class="drag-prompt" id="dragPrompt">or drag &amp; drop HTML files directly here</p>
+            </div>
+
+            <button id="processFiles" type="button">
+                <span id="processButtonText">Fix</span>
+            </button>
+
+            <ul class="selected"></ul>
+            <div id="downloadLinks"></div>
+            <img src="https://sourcenutra.com/wp-content/uploads/2025/04/feuillederable-mapleleaf-2-1024x535.png" alt="Canadian maple leaf" class="bobbing-image">
+        </div>
+        <img class="coatOfArms" src="https://www.sst-tss.gc.ca/themes/custom/sst_wxt/assets/svg/sst-logo-en.svg">
+    </div>
+
+    <script>
+        let currentLang = 'en';
+        let filesQueue = [];
+
+        const enReplacements = [
+            // New footnote structure transforms (run first – full regex with groups)
+            {
+                find: '<div id="ftn(\\d+)">\\s*<p><a href="#_ftnref\\d+" name="_ftn\\d+" title="">\\s*</a>\\s*(.*?)\\s*</p>\\s*</div>',
+                replace: '<dt>Footnote $1</dt><dd id="fn$1"><p>$2</p><p class="fn-rtn"> <a href="#fn$1-rf"><span class="wb-inv">Return to footnote </span>$1<span class="wb-inv"></span></a></p></dd>'
+            },
+            {
+                find: '(\\S+\\s*)<a href="#_ftn([0-9]+)" name="_ftnref([0-9]+)" title="">[ ]*</a>(\\.?)',
+                replace: '<span class="nowrap">$1<sup id="fn$2-rf"><a class="fn-lnk" href="#fn$2"><span class="wb-inv">Footnote</span> $2</a></sup>$4</span>'
+            },
+
+            // Existing English replacements
+            { find: ' v ', replace: ' <abbr title="versus">v</abbr> ' },
+            { find: ' </em>v<em> ', replace: ' </em><abbr title="versus">v</abbr><em> ' },
+            { find: '</em> v <em>', replace: '</em> <abbr title="versus">v</abbr> <em>' },
+            { find: ' v&nbsp;', replace: ' <abbr title="versus">v</abbr>&nbsp;' },
+            { find: '&nbsp;v ', replace: '&nbsp;<abbr title="versus">v</abbr> ' },
+            { find: '&nbsp;v&nbsp;', replace: '&nbsp;<abbr title="versus">v</abbr>&nbsp;' },
+            { find: ' v. ', replace: ' <abbr title="versus">v.</abbr> ' },
+            { find: ' </em>v.<em> ', replace: ' </em><abbr title="versus">v.</abbr><em> ' },
+            { find: '</em> v. <em>', replace: '</em> <abbr title="versus">v.</abbr> <em>' },
+            { find: ' v.&nbsp;', replace: ' <abbr title="versus">v.</abbr>&nbsp;' },
+            { find: '&nbsp;v. ', replace: '&nbsp;<abbr title="versus">v.</abbr> ' },
+            { find: '&nbsp;v.&nbsp;', replace: '&nbsp;<abbr title="versus">v.</abbr>&nbsp;' },
+            { find: 'BOA', replace: '<abbr title="Board of Appeal">BOA</abbr>' },
+            { find: 'EI BOA', replace: '<abbr title="Employment Insurance Board of Appeal">EI BOA</abbr>' },
+            { find: 'ADR', replace: '<abbr title="Alternative Dispute Resolution">ADR</abbr>' },
+            { find: 'CERA', replace: '<abbr title="COVID-19 Emergency Response Act">CERA</abbr>' },
+            { find: 'CERB', replace: '<abbr title="Canada Emergency Response Benefits">CERB</abbr>' },
+            { find: 'CEIC', replace: '<abbr title="Canada Employment Insurance Commission">CEIC</abbr>' },
+            { find: 'COVID-19', replace: '<abbr title="Coronvirus Disease 2019">COVID-19</abbr>' },
+            { find: 'COVID', replace: '<abbr title="Coronvirus Disease">COVID</abbr>' },
+            { find: 'CPP', replace: '<abbr title="Canada Pension Plan">CPP</abbr>' },
+            { find: 'CRA', replace: '<abbr title="Canada Revenue Agency">CRA</abbr>' },
+            { find: 'CRB', replace: '<abbr title="Canada Recovery Benefit">CRB</abbr>' },
+            { find: 'CRP', replace: '<abbr title="Child Rearing provision">CRP</abbr>' },
+            { find: 'DESDA', replace: '<abbr title="Department of Employment and Social Development Act">DESDA</abbr>' },
+            { find: 'DESD', replace: '<abbr title="Department of Employment and Social Development">DESD</abbr>' },
+            { find: 'DUPE', replace: '<abbr title="Division of Unadjusted Pensionable Earnings">DUPE</abbr>' },
+            { find: 'EI ERB', replace: '<abbr title="Employment Insurance Emergency Response Benefit">EI ERB</abbr>' },
+            { find: 'EI', replace: '<abbr title="Employment Insurance">EI</abbr>' },
+            { find: 'ERB', replace: '<abbr title="Emergency Response Benefit">ERB</abbr>' },
+            { find: 'ESDC', replace: '<abbr title="Employment and Social Development Canada">ESDC</abbr>' },
+            { find: 'ESD', replace: '<abbr title="Employment and Social Development">ESD</abbr>' },
+            { find: 'FC', replace: '<abbr title="Federal Court">FC</abbr>' },
+            { find: ' <abbr title="Federal Court">FC</abbr> ', replace: '&nbsp;<abbr title="Federal Court">FC</abbr>&nbsp;' },
+            { find: 'FCA', replace: '<abbr title="Federal Court of Appeal">FCA</abbr>' },
+            { find: ' <abbr title="Federal Court of Appeal">FCA</abbr> ', replace: '&nbsp;<abbr title="Federal Court of Appeal">FCA</abbr>&nbsp;' },
+            { find: 'GIS', replace: '<abbr title="Guaranteed Income Supplement">GIS</abbr>' },
+            { find: 'HRSD', replace: '<abbr title="Human Resources and Skills Development">HRSD</abbr>' },
+            { find: 'IS', replace: '<abbr title="Income Security">IS</abbr>' },
+            { find: 'JGLPA', replace: '<abbr title="Jobs, Growth and Long-term Prosperity Act">JGLPA</abbr>' },
+            { find: 'MIE', replace: '<abbr title="Maximum Insurable Earnings">MIE</abbr>' },
+            { find: 'MQP', replace: '<abbr title="Minimum Qualifying Period">MQP</abbr>' },
+            { find: 'N/A', replace: '<abbr title="Not applicable">N/A</abbr>' },
+            { find: 'OAS', replace: '<abbr title="Old Age Security">OAS</abbr>' },
+            { find: 'OCRT', replace: '<abbr title="Office of the Commissioner of Review Tribunals">OCRT</abbr>' },
+            { find: 'ODSP', replace: '<abbr title="Ontario Disability Support Program">ODSP</abbr>' },
+            { find: 'OSFI', replace: '<abbr title="Office of the Superintendent of Financial Institutions">OSFI</abbr>' },
+            { find: 'PAB', replace: '<abbr title="Pension Appeal Board">PAB</abbr>' },
+            { find: 'PDF', replace: '<abbr title="Portable Document Format">PDF</abbr>' },
+            { find: 'RCMP', replace: '<abbr title="Royal Canadian Mounted Police">RCMP</abbr>' },
+            { find: 'ROE', replace: '<abbr title="Record of employment">ROE</abbr>' },
+            { find: 'SCC', replace: '<abbr title="Supreme Court of Canada">SCC</abbr>' },
+            { find: 'SIN', replace: '<abbr title="Social Insurance Number">SIN</abbr>' },
+            { find: 'TTY', replace: '<abbr title="Teletypewriter">TTY</abbr>' },
+            { find: 'YTD', replace: '<abbr title="Year to date">YTD</abbr>' },
+            { find: 'SSTADIS', replace: '<abbr title="Social Security Tribunal Appeal Division Income Security">SSTADIS</abbr>' },
+            { find: 'SSTGDIS', replace: '<abbr title="Social Security Tribunal General Division Income Security">SSTGDIS</abbr>' },
+            { find: 'SSTGDEI', replace: '<abbr title="Social Security Tribunal General Division Employment Insurance">SSTGDEI</abbr>' },
+            { find: 'SSTADEI', replace: '<abbr title="Social Security Tribunal Appeal Division Employment Insurance">SSTADEI</abbr>' },
+            { find: 'SSTGD', replace: '<abbr title="Social Security Tribunal General Division">SSTGD</abbr>' },
+            { find: 'SSTAD', replace: '<abbr title="Social Security Tribunal Appeal Division">SSTAD</abbr>' },
+            { find: 'SST', replace: '<abbr title="Social Security Tribunal">SST</abbr>' }
+        ];
+
+        const frReplacements = [
+            // New footnote structure transforms (run first – full regex with groups)
+            {
+                find: '<div id="ftn(\\d+)">\\s*<p><a href="#_ftnref\\d+" name="_ftn\\d+" title="">\\s*</a>\\s*(.*?)\\s*</p>\\s*</div>',
+                replace: '<dt>Note de bas de page $1</dt><dd id="fn$1"><p>$2</p><p class="fn-rtn"> <a href="#fn$1-rf"><span class="wb-inv">Retour à la référence de la note de bas de page </span>$1<span class="wb-inv"> referrer</span></a></p></dd>'
+            },
+            {
+                find: '(\\S+\\s*)<a href="#_ftn([0-9]+)" name="_ftnref([0-9]+)" title="">[ ]*</a>(\\.?)',
+                replace: '<span class="nowrap">$1<sup id="fn$2-rf"><a class="fn-lnk" href="#fn$2"><span class="wb-inv">Note de bas page</span> $2</a></sup>$4</span>'
+            },
+            // Contre (c.) with period
+            { find: ' c. ', replace: ' <abbr title="contre">c.</abbr> ' },
+            { find: ' </em>c.<em> ', replace: ' </em><abbr title="contre">c.</abbr><em> ' },
+            { find: '</em> c. <em>', replace: '</em> <abbr title="contre">c.</abbr> <em>' },
+            { find: ' c.&nbsp;', replace: ' <abbr title="contre">c.</abbr>&nbsp;' },
+            { find: '&nbsp;c. ', replace: '&nbsp;<abbr title="contre">c.</abbr> ' },
+            { find: '&nbsp;c.&nbsp;', replace: '&nbsp;<abbr title="contre">c.</abbr>&nbsp;' },
+
+            // Contre (c) without period
+            { find: ' c ', replace: ' <abbr title="contre">c</abbr> ' },
+            { find: ' </em>c<em> ', replace: ' </em><abbr title="contre">c</abbr><em> ' },
+            { find: '</em> c <em>', replace: '</em> <abbr title="contre">c</abbr> <em>' },
+            { find: ' c&nbsp;', replace: ' <abbr title="contre">c</abbr>&nbsp;' },
+            { find: '&nbsp;c ', replace: '&nbsp;<abbr title="contre">c</abbr> ' },
+            { find: '&nbsp;c&nbsp;', replace: '&nbsp;<abbr title="contre">c</abbr>&nbsp;' },
+
+            // Acronyms
+            { find: 'ATS', replace: '<abbr title="appareil de télécommunication pour personnes sourde">ATS</abbr>' },
+            { find: 'AE', replace: '<abbr title="assurance-emploi">AE</abbr>' },
+            { find: 'ARC', replace: '<abbr title="Agence du revenu du Canada">ARC</abbr>' },
+            { find: 'BCTR', replace: '<abbr title="Bureau du Commissaire des tribunaux de révision">BCTR</abbr>' },
+            { find: 'BSIF', replace: '<abbr title="Bureau du surintendant des institutions financières">BSIF</abbr>' },
+            { find: 'CAEC', replace: '<abbr title="Commission de l’assurance-emploi du Canada">CAEC</abbr>' },
+            { find: 'CAAE', replace: '<abbr title="Conseil d’appel en assurance-emploi">CAAE</abbr>' },
+            { find: 'CEE', replace: '<abbr title="Clause pour élever des enfants">CEE</abbr>' },
+            { find: 'CAF', replace: '<abbr title="Cour d&rsquo;appel fédérale">CAF</abbr>' },
+            { find: 'CAP', replace: '<abbr title="Commission d&rsquo;’appel des pensions">CAP</abbr>' },
+            { find: 'CCI', replace: '<abbr title="Cour canadienne de l&rsquo;impôt">CCI</abbr>' },
+            { find: 'CCQ', replace: '<abbr title="Commission de la construction du Québec">CCQ</abbr>' },
+            { find: 'CF', replace: '<abbr title="Cour fédérale">CF</abbr>' },
+            { find: 'CNESST', replace: '<abbr title="Commission des normes, de l&rsquo;équité, de la santé et de la sécurité du travail">CNESST</abbr>' },
+            { find: 'COVID-19', replace: '<abbr title="Maladie à coronavirus 2019">COVID-19</abbr>' },
+            { find: 'COVID', replace: '<abbr title="Maladie à coronavirus">COVID</abbr>' },
+            { find: 'CSC', replace: '<abbr title="Cour suprême du Canada">CSC</abbr>' },
+            { find: 'CSN', replace: '<abbr title="Confédération des syndicats nationaux">CSN</abbr>' },
+            { find: 'CSST', replace: '<abbr title="Commission de la santé et de la sécurité du travail">CSST</abbr>' },
+            { find: 'EDSC', replace: '<abbr title="Emploi et Développement social Canada">EDSC</abbr>' },
+            { find: 'EDS', replace: '<abbr title="Emploi et Développement social">EDS</abbr>' },
+            { find: 'LAE', replace: '<abbr title="Loi sur l&rsquo;assurance-emploi">LAE</abbr>' },
+            { find: 'LECPD', replace: '<abbr title="Loi sur l&rsquo;emploi, la croissance et la prospérité durable">LECPD</abbr>' },
+            { find: 'LMEDS', replace: '<abbr title="Loi sur le ministère de l&rsquo;Emploi et du Développement social">LMEDS</abbr>' },
+            { find: 'LMUC', replace: '<abbr title="Loi sur les mesures d&rsquo;urgence visant la COVID-19">LMUC</abbr>' },
+            { find: 'MEDS', replace: '<abbr title="Ministère de l&rsquo;Emploi et du Développement social">MEDS</abbr>' },
+            { find: 'MRA', replace: '<abbr title="Maximum de la rémunération assurable">MRA</abbr>' },
+            { find: 'NAS', replace: '<abbr title="Numéro d&rsquo;assurance sociale">NAS</abbr>' },
+            { find: 'N/D', replace: '<abbr title="Non disponible">N/D</abbr>' },
+            { find: 'PAEU', replace: '<abbr title="Prestation d’assurance-emploi d’urgence">PAEU</abbr>' },
+            { find: 'PCRE', replace: '<abbr title="Prestation canadienne de la relance économique">PCRE</abbr>' },
+            { find: 'PCU', replace: '<abbr title="Prestation canadienne d’urgence">PCU</abbr>' },
+            { find: 'PDF', replace: '<abbr title="format de document portable">PDF</abbr>' },
+            { find: 'PGNAP', replace: '<abbr title="Partage des gains non ajustés ouvrant droit à pension">PGNAP</abbr>' },
+            { find: 'PMA', replace: '<abbr title="période minimale d&rsquo;admissibilité">PMA</abbr>' },
+            { find: 'POSPH', replace: '<abbr title="Programme ontarien de soutien aux personnes handicapées">POSPH</abbr>' },
+            { find: 'PRTC', replace: '<abbr title="Programme de réduction du taux de cotisation">PRTC</abbr>' },
+            { find: 'RAS', replace: '<abbr title="Régime d’assurance-salaire">RAS</abbr>' },
+            { find: 'RCPE', replace: '<abbr title="Réduction des cotisations pour les petites entreprises">RCPE</abbr>' },
+            { find: 'RE', replace: '<abbr title="Relevé d&rsquo;emploi">RE</abbr>' },
+            { find: 'RHDC', replace: '<abbr title="Ressources humaines et du Développement des compétences">RHDC</abbr>' },
+            { find: 'RPC', replace: '<abbr title="Régime de pensions du Canada">RPC</abbr>' },
+            { find: 'RQAP', replace: '<abbr title="Régime d’assurance parentale du Québec">RQAP</abbr>' },
+            { find: 'RRQ', replace: '<abbr title="Régie des rentes du Québec">RRQ</abbr>' },
+            { find: 'SRG', replace: '<abbr title="Supplément de revenu garanti">SRG</abbr>' },
+            { find: 'SR', replace: '<abbr title="Sécurité du revenu">SR</abbr>' },
+            { find: 'LSV', replace: '<abbr title="Loi sur la sécurité de la vieillesse">LSV</abbr>' },
+            { find: 'SV', replace: '<abbr title="Sécurité de la vieillesse">SV</abbr>' },
+            { find: 'TSSDASR', replace: '<abbr title="Tribunal de la sécurité sociale division d’appel sécurité du revenu">TSSDASR</abbr>' },
+            { find: 'TSSDGSR', replace: '<abbr title="Tribunal de la sécurité sociale division générale sécurité du revenu">TSSDGSR</abbr>' },
+            { find: 'TSSDGAE', replace: '<abbr title="Tribunal de la sécurité sociale division générale assurance-emploi">TSSDGAE</abbr>' },
+            { find: 'TSSDAAE', replace: '<abbr title="Tribunal de la sécurité sociale division d’appel assurance-emploi">TSSDDAAE</abbr>' },
+            { find: 'TSSDA', replace: '<abbr title="Tribunal de la sécurité sociale division d’appel">TSSDA</abbr>' },
+            { find: 'TSS', replace: '<abbr title="Tribunal de la sécurité sociale">TSS</abbr>' }
+        ];
+
+        const ui = {
+            en: {
+                title: 'Find, replace & format (English)',
+                pageTitle: 'EN Magic Replacement & Formatter',
+                fileLabel: 'Dump',
+                dragPrompt: 'or drag & drop HTML files directly here',
+                dragActive: 'Drop HTML files now!',
+                processButton: 'Fix',
+                langButton: 'French',
+                alert: 'Please select or drop one or more HTML files first!'
+            },
+            fr: {
+                title: 'Remplacer et formater (Français)',
+                pageTitle: 'FR Magic Replacement & Formatter',
+                fileLabel: 'Dump',
+                dragPrompt: 'ou glissez-déposez vos fichiers HTML directement ici',
+                dragActive: 'Déposez les fichiers HTML maintenant !',
+                processButton: 'Fix',
+                langButton: 'English',
+                alert: 'Veuillez sélectionner ou déposer au moins un fichier HTML d’abord !'
+            }
+        };
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'fr' : 'en';
+            updateUI();
+        }
+
+        function updateUI() {
+            const strings = ui[currentLang];
+            document.getElementById('pageTitle').textContent = strings.title;
+            document.title = strings.pageTitle;
+            document.documentElement.lang = currentLang;
+            const label = document.getElementById('fileLabel');
+            if (label.childNodes[0].nodeType === Node.TEXT_NODE) {
+                label.childNodes[0].textContent = strings.fileLabel + ' ';
+            }
+            document.getElementById('dragPrompt').textContent = strings.dragPrompt;
+            document.getElementById('processButtonText').textContent = strings.processButton;
+            document.getElementById('langButtonText').textContent = strings.langButton;
+        }
+
+        document.getElementById('lang').addEventListener('click', toggleLanguage);
+
+        // Safe Regex Helpers
+        function escapeRegExp(str) {
+            return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+
+        // Improved word-boundary pattern (prevents "BOA" matching inside "Board")
+        function buildPattern(find) {
+            const escaped = escapeRegExp(find);
+            return `(?<![\\wÀ-ÿ])${escaped}(?![\\wÀ-ÿ])`;
+        }
+
+        // HTML Single-Tab Formatter
+        function formatHtmlWithTabs(html) {
+            let text = html.replace(/[ ]{2,}/g, ' ');
+
+            const voidTags = /^(?:area|base|br|col|embed|hr|img|input|link|meta|param|source|track|wbr)$/i;
+            const inlineTags = /^(?:abbr|a|b|i|em|strong|span|sub|sup|code|small|mark|time|cite|q|u|s|dfn|kbd|samp|var)$/i;
+
+            const tokens = text.split(/(<[^>]+>)/g).filter(Boolean);
+            let indent = 0;
+            const tab = '\t';
+            const lines = [];
+            let currentLine = '';
+            let rawTag = null;
+
+            for (let i = 0; i < tokens.length; i++) {
+                const token = tokens[i];
+                const isTag = token.startsWith('<') && token.endsWith('>');
+
+                if (rawTag) {
+                    if (isTag && token.toLowerCase().startsWith(`</${rawTag}`)) {
+                        if (currentLine.length > 0) {
+                            lines.push(currentLine);
+                            currentLine = '';
+                        }
+                        rawTag = null;
+                        indent = Math.max(0, indent - 1);
+                        lines.push(tab.repeat(indent) + token);
+                    } else {
+                        currentLine += token;
+                    }
+                    continue;
+                }
+
+                if (isTag) {
+                    if (token.startsWith('<!DOCTYPE') || token.startsWith('<!doctype') || token.startsWith('<!--')) {
+                        if (currentLine.trim().length > 0) {
+                            lines.push(currentLine);
+                            currentLine = '';
+                        }
+                        lines.push(token);
+                        continue;
+                    }
+
+                    const isClosing = token.startsWith('</');
+                    const tagMatch = token.match(/<\/?([a-zA-Z0-9!_-]+)/);
+                    const tagName = tagMatch ? tagMatch[1].toLowerCase() : '';
+                    const isVoid = voidTags.test(tagName) || token.endsWith('/>');
+                    const isInline = inlineTags.test(tagName);
+
+                    if (isInline) {
+                        currentLine += token;
+                    } else if (isClosing) {
+                        indent = Math.max(0, indent - 1);
+                        if (currentLine.trim().length > 0) {
+                            currentLine += token;
+                            lines.push(currentLine);
+                            currentLine = '';
+                        } else {
+                            lines.push(tab.repeat(indent) + token);
+                        }
+                    } else if (isVoid) {
+                        if (currentLine.trim().length > 0) {
+                            lines.push(currentLine);
+                            currentLine = '';
+                        }
+                        lines.push(tab.repeat(indent) + token);
+                    } else {
+                        if (tagName === 'style' || tagName === 'script' || tagName === 'pre' || tagName === 'textarea') {
+                            rawTag = tagName;
+                        }
+                        if (currentLine.trim().length > 0) {
+                            lines.push(currentLine);
+                            currentLine = '';
+                        }
+                        currentLine = tab.repeat(indent) + token;
+                        indent++;
+                    }
+                } else {
+                    let cleanText = token.replace(/\r?\n|\r/g, ' ').replace(/[ ]{2,}/g, ' ');
+                    if (cleanText.length > 0) {
+                        if (currentLine.endsWith(' ') && cleanText.startsWith(' ')) {
+                            cleanText = cleanText.substring(1);
+                        }
+                        currentLine += cleanText;
+                    }
+                }
+            }
+
+            if (currentLine.trim().length > 0) {
+                lines.push(currentLine);
+            }
+
+            return lines.map(line => {
+                const match = line.match(/^(\t*)(.*)$/);
+                if (match) {
+                    return match[1] + match[2].trimEnd().replace(/[ ]{2,}/g, ' ');
+                }
+                return line.trimEnd().replace(/[ ]{2,}/g, ' ');
+            }).join('\n');
+        }
+
+        // File Selection & Drag-and-Drop
+        const dropzone = document.getElementById('dropzone');
+        const fileInput = document.getElementById('fileInput');
+
+        function updateSelectedList() {
+            const selectedList = document.querySelector('.selected');
+            selectedList.innerHTML = '';
+            if (filesQueue.length > 0) {
+                selectedList.style.display = 'block';
+                filesQueue.forEach(file => {
+                    const li = document.createElement('li');
+                    li.textContent = file.name;
+                    selectedList.appendChild(li);
+                });
+            } else {
+                selectedList.style.display = 'none';
+            }
+        }
+
+        fileInput.addEventListener('change', (e) => {
+            filesQueue = Array.from(e.target.files);
+            updateSelectedList();
+        });
+
+        // Drag events
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropzone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropzone.classList.add('drag-active');
+                document.getElementById('dragPrompt').textContent = ui[currentLang].dragActive;
+            }, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropzone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropzone.classList.remove('drag-active');
+                document.getElementById('dragPrompt').textContent = ui[currentLang].dragPrompt;
+            }, false);
+        });
+
+        dropzone.addEventListener('drop', (e) => {
+            const droppedFiles = Array.from(e.dataTransfer.files).filter(f => f.name.endsWith('.html') || f.name.endsWith('.htm'));
+            if (droppedFiles.length > 0) {
+                filesQueue = droppedFiles;
+                updateSelectedList();
+            }
+        });
+
+        // Processing & Download
+        document.getElementById('processFiles').addEventListener('click', () => {
+            if (!filesQueue.length) {
+                alert(ui[currentLang].alert);
+                return;
+            }
+
+            const downloadLinks = document.getElementById('downloadLinks');
+            downloadLinks.innerHTML = '';
+
+            const replacements = currentLang === 'en' ? enReplacements : frReplacements;
+
+            // Date regexes
+            const enDateRegex = /\b([A-Za-zÀ-ÿ]+)(?:&nbsp;|[ \t\u00A0])+(\d{1,2}),(?:&nbsp;|[ \t\u00A0])+(\d{4})\b/g;
+            const frDateRegex = /\b(\d{1,2}(?:er|ᵉʳ|<sup>er<\/sup>)?)(?:&nbsp;|[ \t\u00A0])+(janvier|f[ée]vrier|mars|avril|mai|juin|juillet|ao[ûu]t|septembre|octobre|novembre|d[ée]cembre)(?:&nbsp;|[ \t\u00A0])+(\d{4})\b/gi;
+
+            filesQueue.forEach((file) => {
+                const reader = new FileReader();
+
+                reader.onload = function (event) {
+                    let content = event.target.result;
+
+                    // 1. Collapse multiple consecutive spaces to a single space
+                    content = content.replace(/[ ]{2,}/g, ' ');
+
+                    // 2. Safely apply replacements
+                    replacements.forEach(({ find, replace }) => {
+                        // Complex regex patterns that contain capturing groups (e.g. the new footnote rules)
+                        if (/\(/.test(find)) {
+                            // Use 'gs' when the pattern needs to match across newlines
+                            const flags = /[.\*]/.test(find) ? 'gs' : 'g';
+                            try {
+                                const regex = new RegExp(find, flags);
+                                content = content.replace(regex, replace);
+                            } catch (err) {
+                                console.warn('Regex replace failed for pattern:', find, err);
+                            }
+                        } else if (find.includes('<')) {
+                            // Simple literal HTML fragment replace
+                            content = content.split(find).join(replace);
+                        } else {
+                            // Whole-word acronym / short phrase replace (protected from tags & existing <abbr>)
+                            const pattern = buildPattern(find);
+                            const regex = new RegExp(`(<[aA][bB][bB][rR]\\b[^>]*>[\\s\\S]*?<\\/[aA][bB][bB][rR]>|<[aA][bB][bB][rR]\\b[^>]*>|<\\/[aA][bB][bB][rR]>|<[^>]+>)|(${pattern})`, 'g');
+                            content = content.replace(regex, (match, group1) => {
+                                if (group1) return group1;
+                                return replace;
+                            });
+                        }
+                    });
+
+                    // 3. Format dates: French dates & English dates with non-breaking spaces
+                    content = content.replace(enDateRegex, '$1&nbsp;$2,&nbsp;$3');
+                    content = content.replace(frDateRegex, '$1&nbsp;$2&nbsp;$3');
+
+                    // 4. Remove any remaining consecutive spaces
+                    content = content.replace(/[ ]{2,}/g, ' ');
+
+                    // 5. Always format HTML with single tab margins
+                    content = formatHtmlWithTabs(content);
+
+                    const blob = new Blob([content], { type: 'text/html;charset=utf-8' });
+                    const url = URL.createObjectURL(blob);
+
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = file.name;
+                    link.textContent = '⬇ ' + file.name;
+                    downloadLinks.appendChild(link);
+                };
+
+                reader.readAsText(file);
+            });
+        });
+    </script>
+</body>
+</html>
